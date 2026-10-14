@@ -12,27 +12,12 @@ The evaluation includes six real-world trajectory datasets, algorithm and compon
 
 ## Results Summary
 
-Embedded results from E6 in [`results/result.xlsx`](results/result.xlsx). CR is compression ratio; CT and DT are mean on-board compression and decompression time in μs/point.
-
-| Method | CR | CT (μs/point) | DT (μs/point) |
-|---|---:|---:|---:|
-| ACoST | 20.107 | 256 | 239.124 |
-| CoST | 16.556 | 139 | 48.343 |
-| Serf-Qt | 10.289 | 46 | 17.378 |
-| Elf | 1.575 | 72 | 36.482 |
-| VOLTCom | 3.635 | 41 | 14.257 |
-| OPW-TR | 2.361 | 182 | — |
-
-Measured embedded end-to-end latency in milliseconds at each UART baud rate:
-
-| Method | 9600 baud | 4800 baud | 2400 baud | 1200 baud | 600 baud | 300 baud |
+| Metric | ACoST | CoST | Serf-Qt | Elf | VOLTCom | OPW-TR |
 |---|---:|---:|---:|---:|---:|---:|
-| ACoST | 2.388 | 4.254 | 7.971 | 15.462 | 30.431 | 60.421 |
-| CoST | 2.136 | 4.048 | 7.878 | 15.529 | 30.826 | 61.486 |
-| Serf-Qt | 7.881 | 15.672 | 31.248 | 62.436 | 124.781 | 249.424 |
-| Elf | 16.397 | 32.672 | 65.223 | 130.317 | 260.516 | 520.879 |
-| VOLTCom | 14873.107 | 14975.407 | 15179.997 | 15373.401 | 15951.485 | 17089.801 |
-| OPW-TR | 8785.933 | 8827.160 | 8909.415 | 9073.141 | 9382.395 | 11734.932 |
+| CR (ε=10⁻⁵) | 6.84% | 7.24% | 8.72% | 35.64% | 50.18% | 54.20% |
+| CT (PC, μs/pt) | 0.100 | 0.120 | 0.037 | 0.078 | 0.002 | 0.137 |
+| CT (STM32, μs/pt) | 256 | 139 | 46 | 72 | 41 | 182 |
+| E2E @300 baud (ms) | 60.42 | 61.49 | 249.42 | 520.88 | 17089.80 | 11734.93 |
 
 ## Project Structure
 
