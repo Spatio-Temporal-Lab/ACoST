@@ -1,0 +1,44 @@
+# Build artifacts
+*.exe
+*.o
+*.d
+*.elf
+*.bin
+*.hex
+*.map
+*.py[cod]
+__pycache__/
+.DS_Store
+**/Objects/
+**/Listings/
+**/OBJ/
+*.uvguix*
+*.uvoptx
+outputs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# History
+.history/
+
+# Compiled experiment binaries
+experiments/*/e1_*
+experiments/*/e2_*
+!experiments/*/*.cc
+!experiments/*/*.sh
+
+# Embedded build
+embedded/build/
+embedded/OBJ/
+
+# Data (too large for git; download separately)
+data/
+!data/README.md
+
+# OS
+Thumbs.db

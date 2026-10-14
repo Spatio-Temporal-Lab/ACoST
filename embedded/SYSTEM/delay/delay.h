@@ -1,0 +1,37 @@
+#ifndef __DELAY_H
+#define __DELAY_H 			   
+#include "sys.h"  
+
+void delay_init(void);
+void delay_ms(__IO uint32_t  nTime);
+
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
