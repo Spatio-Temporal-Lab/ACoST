@@ -7,7 +7,6 @@
  *   1. Gorilla  — Facebook XOR-based lossless (streaming, per-value)
  *   2. Serf-Qt  — Quantize + ZigZag + Elias-Gamma lossy (streaming, per-value)
  *   3. Elf      — Precision-adaptive XOR lossless (streaming, per-value)
- *   4. LZ77     — FastLZ block-based lossless (mini-batch, per-block)
  *
  * Each algorithm compresses a SINGLE double value (lon or lat) per call.
  * The benchmark wrapper calls each twice per GPS point (once lon, once lat).
@@ -168,59 +167,6 @@ struct ElfEmbDecomp {
 };
 
 /* ════════════════════════════════════════════════════════════════════════
- *  4. LZ77/FastLZ (lightweight block compressor)
- *     Compresses a block of raw bytes.
- *     Lossless, block-based.
- *
- *     For the benchmark we accumulate N raw double values into a buffer,
- *     then compress the entire block and measure CR/time.
- *     On STM32 with 20KB RAM, block = 50 doubles = 400 bytes is safe.
  * ════════════════════════════════════════════════════════════════════════ */
 
-#define FASTLZ_BLK_DOUBLES 50
-#define FASTLZ_RAW_SIZE    (FASTLZ_BLK_DOUBLES * 8)
-/* FastLZ output can be at most 5% larger than input + 66 */
-#define FASTLZ_OUT_SIZE    (FASTLZ_RAW_SIZE + FASTLZ_RAW_SIZE / 20 + 66)
 
-struct FastLzEmbState {
-    uint8_t raw_buf[FASTLZ_RAW_SIZE];
-    uint8_t out_buf[FASTLZ_OUT_SIZE];
-    int     raw_pos;       /* bytes written to raw_buf */
-    int     flush_count;   /* number of blocks flushed */
-    uint64_t total_raw;    /* total raw bytes fed */
-    uint64_t total_comp;   /* total compressed bytes produced */
-
-    void init();
-    /**
-     * Feed one double value.
-     * When buffer is full, compresses the block.
-     * @return compressed_bytes this call (0 if not yet flushed).
-     */
-    int  feed(double v);
-    /** Force-flush partial block. Returns compressed bytes. */
-    int  flush();
-};
-
-/* ── FastLZ core (inlined from fastlz.c, level-1 only) ──────────────── */
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/**
- * Compress `length` bytes from `input` into `output`.
- * Returns the number of bytes in the compressed output.
- * `output` must be at least 5% larger than `input` + some overhead.
- */
-int fastlz_compress(const void *input, int length, void *output);
-
-/**
- * Decompress `length` bytes from `input` into `output`.
- * Returns the number of bytes in the decompressed output.
- * `maxout` is the maximum output size.
- */
-int fastlz_decompress(const void *input, int length, void *output, int maxout);
-
-#ifdef __cplusplus
-}
-#endif

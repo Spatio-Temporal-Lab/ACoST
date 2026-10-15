@@ -1,4 +1,4 @@
-// E1: Overall comparison of the paper's 12 methods on normalized trajectories.
+// E1: Overall comparison of 11 methods on normalized trajectories.
 //
 // Algorithms:
 //   Ours:      ACoST, CoST
@@ -48,11 +48,6 @@
 
 // ─── Utils ───
 #include "../../utils/benchmark_utils.h"
-
-// ─── LZ77 (FastLZ) ───
-extern "C" {
-#include "../../baselines/lz77/fastlz.h"
-}
 
 namespace {
 
@@ -530,46 +525,18 @@ void RunRaw(const std::vector<Point2D>& traj, PerfRecord& r) {
     r.total_trajectories++;
 }
 
-// LZ77 (FastLZ): lossless block compression on raw lon/lat bytes
-void RunLZ77(const std::vector<Point2D>& traj, PerfRecord& r) {
-    if (traj.empty()) return;
-    // Pack lon+lat as raw doubles (16 bytes per point)
-    size_t raw_size = traj.size() * 16;
-    std::vector<uint8_t> raw_buf(raw_size);
-    for (size_t i = 0; i < traj.size(); ++i) {
-        std::memcpy(&raw_buf[i*16],     &traj[i].x, 8);
-        std::memcpy(&raw_buf[i*16 + 8], &traj[i].y, 8);
-    }
-
-    // Output buffer: FastLZ needs at least 5% larger + 66
-    size_t out_cap = raw_size + raw_size / 20 + 66;
-    std::vector<uint8_t> comp_buf(out_cap);
-
-    benchmark_utils::DoNotOptimize(raw_buf.data());
-    benchmark_utils::ClobberMemory();
-    auto t0 = std::chrono::steady_clock::now();
-    int comp_len = fastlz_compress_level(1, raw_buf.data(), (int)raw_size, comp_buf.data());
-    benchmark_utils::ClobberMemory();
-    auto t1 = std::chrono::steady_clock::now();
-
-    r.total_compressed_bits       += (long long)comp_len * 8LL;
-    r.total_compression_time_us   += std::chrono::duration_cast<std::chrono::microseconds>(t1-t0).count();
-    r.total_points                += (long long)traj.size();
-    r.total_trajectories++;
-}
-
 // ─── Method dispatch ───
 
-constexpr int kMethodCount = 12;
+constexpr int kMethodCount = 11;
 const char* kMethodNames[kMethodCount] = {
     "acost", "cost", "gorilla", "serf_qt", "serf_xor", "elf",
-    "opwtr", "dr", "squish_e", "voltcom", "lz77", "raw"
+    "opwtr", "dr", "squish_e", "voltcom", "raw"
 };
 
 using RunFunc = void(*)(const std::vector<Point2D>&, PerfRecord&);
 RunFunc kRunFuncs[kMethodCount] = {
     RunACoST, RunCoST, RunGorilla, RunSerfQt, RunSerfXor, RunElf,
-    RunOPWTR, RunDR, RunSQUISHE, RunVOLTCom, RunLZ77, RunRaw
+    RunOPWTR, RunDR, RunSQUISHE, RunVOLTCom, RunRaw
 };
 
 void RunAllMethods(const std::vector<Point2D>& traj, std::vector<PerfRecord>& records) {
@@ -994,7 +961,7 @@ int main(int argc, char** argv) {
     }
 
     std::cout << "====================================================================\n"
-              << "E1: Overall Benchmark — 12 methods on normalized trajectories\n"
+              << "E1: Overall Benchmark — 11 methods on normalized trajectories\n"
               << "Epsilon = " << std::scientific << g_max_diff << "\n"
               << "====================================================================\n\n";
 

@@ -1,7 +1,7 @@
 /**
  * acost_benchmark.cpp  –  Full E2E benchmark:
  *   Ours:      ACoST / CoST
- *   Serf-base: Gorilla / Serf-Qt / Elf / LZ77(FastLZ)
+ *   Serf-base: Gorilla / Serf-Qt / Elf
  *   Trad:      OPWTR / DR / SQUISH-E / VOLTCom
  *   Baseline:  Raw
  *
@@ -57,25 +57,24 @@ static void u1_putc(uint8_t c) {
 static void u1_puts(const char *s) { while (*s) u1_putc((uint8_t)*s++); }
 
 /* ── Algorithm indices ───────────────────────────────────────────────── */
-/* 0=ACoST  1=CoST  2=Gorilla  3=Serf-Qt  4=Serf-XOR  5=Elf  6=LZ77
- * 7=OPWTR  8=DR  9=SQUISH-E  10=VOLTCom  11=Raw */
-#define ALG_COUNT 12
+/* 0=ACoST  1=CoST  2=Gorilla  3=Serf-Qt  4=Serf-XOR  5=Elf
+ * 6=OPWTR  7=DR  8=SQUISH-E  9=VOLTCom  10=Raw */
+#define ALG_COUNT 11
 #define ALG_ACOST   0
 #define ALG_COST     1
 #define ALG_GORILLA  2
 #define ALG_SERFQT   3
 #define ALG_SERFXOR  4
 #define ALG_ELF      5
-#define ALG_LZ77     6
-#define ALG_OPWTR    7
-#define ALG_DR       8
-#define ALG_SQUISHE  9
-#define ALG_VOLTCOM  10
-#define ALG_RAW      11
+#define ALG_OPWTR    6
+#define ALG_DR       7
+#define ALG_SQUISHE  8
+#define ALG_VOLTCOM  9
+#define ALG_RAW      10
 
 static const char * const ALG_NAMES[ALG_COUNT] = {
     "ACoST", "CoST",
-    "Gorilla", "Serf-Qt", "Serf-XOR", "Elf", "LZ77",
+    "Gorilla", "Serf-Qt", "Serf-XOR", "Elf",
     "OPWTR", "DR", "SQUISH-E", "VOLTCom", "Raw"
 };
 
@@ -100,7 +99,6 @@ static SerfXorEmbComp    s_sxor_comp_lon, s_sxor_comp_lat;
 static SerfXorEmbDecomp  s_sxor_decomp_lon, s_sxor_decomp_lat;
 static ElfEmbComp        s_elf_comp_lon, s_elf_comp_lat;
 static ElfEmbDecomp      s_elf_decomp_lon, s_elf_decomp_lat;
-static FastLzEmbState    s_flz_lon, s_flz_lat;
 static OpwtrState        s_opwtr;
 static DrState           s_dr;
 static SquisheState      s_squishe;
@@ -138,7 +136,6 @@ void AcostBench_Init(double epsilon) {
     s_sxor_decomp_lon.init(); s_sxor_decomp_lat.init();
     s_elf_comp_lon.init(); s_elf_comp_lat.init();
     s_elf_decomp_lon.init(); s_elf_decomp_lat.init();
-    s_flz_lon.init(); s_flz_lat.init();
 
     double eps_m = epsilon * 111000.0;
     s_opwtr.init(epsilon);
@@ -156,7 +153,7 @@ void AcostBench_Init(double epsilon) {
     s_dump_requested = 0;
 
     u1_puts("\r\n=== E2E Benchmark READY (11 algorithms) ===\r\n");
-    u1_puts("ACoST/CoST + Gorilla/Serf-Qt/Elf/LZ77 + 4trad + Raw\r\n");
+    u1_puts("ACoST/CoST + Gorilla/Serf-Qt/Elf + 4trad + Raw\r\n");
     u1_puts("Send any byte to dump results.\r\n");
 }
 
@@ -327,29 +324,6 @@ void AcostBench_Feed(double lon_deg, double lat_deg, uint64_t ts_ms) {
         ++s_pts[ALG_ELF];
     }
 
-    /* ── 7. LZ77/FastLZ (block-based, lossless) ─────────────────────── */
-    {
-        uint32_t t0 = DWT_CYCCNT;
-        s_flz_lon.feed(lon_deg);
-        s_flz_lat.feed(lat_deg);
-        uint32_t t1 = DWT_CYCCNT;
-
-        uint32_t comp_x10 = cyc2x10(t1 - t0);
-        s_comp_sum[ALG_LZ77] += comp_x10;
-        /* CR computed from accumulated total_raw / total_comp at report time */
-        s_total_bits[ALG_LZ77] = (s_flz_lon.total_comp + s_flz_lat.total_comp) * 8;
-        ++s_pts[ALG_LZ77];
-        /* E2E: use raw bytes ratio for TX estimate */
-        uint32_t raw_bytes_this = 16; /* 8 + 8 */
-        double cr_est = (s_flz_lon.total_raw + s_flz_lat.total_raw) > 0
-            ? (double)(s_flz_lon.total_comp + s_flz_lat.total_comp)
-              / (double)(s_flz_lon.total_raw + s_flz_lat.total_raw)
-            : 1.0;
-        uint32_t comp_bytes = (uint32_t)(raw_bytes_this * cr_est);
-        uint32_t tx_x10 = (TX_OVERHEAD_COMP + comp_bytes) * TX_X10_PER_BYTE;
-        s_e2e_sum[ALG_LZ77] += comp_x10 + tx_x10;
-    }
-
     /* ── 8. OPWTR ───────────────────────────────────────────────────── */
     {
         int &np = s_npend[0];
@@ -459,7 +433,7 @@ void AcostBench_Report(void) {
         uint64_t comp_bits;
         double cr;
 
-        if (i <= ALG_LZ77) {
+        if (i <= ALG_ELF) {
             /* Streaming/block compressors: use total_bits directly */
             comp_bits = s_total_bits[i];
             cr = original_bits > 0 ? (double)comp_bits / (double)original_bits : 0.0;

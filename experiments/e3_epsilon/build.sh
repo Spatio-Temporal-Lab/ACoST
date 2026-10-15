@@ -11,7 +11,7 @@ g++ -O3 -std=c++17 -I"$REPO_ROOT" -I"$REPO_ROOT/baselines/elf" \
     "$REPO_ROOT/baselines/serf/serf_xor_compressor.cc" "$REPO_ROOT/baselines/serf/serf_xor_decompressor.cc" \
     "$REPO_ROOT/baselines/gorilla/gorilla_compressor.cc" "$REPO_ROOT/baselines/gorilla/gorilla_decompressor.cc" \
     "$REPO_ROOT/baselines/elf/ElfCompressor.cpp" "$REPO_ROOT/baselines/elf/ElfDecompressor.cpp" \
-    "$REPO_ROOT/baselines/elf/utils.cc" "$REPO_ROOT/baselines/lz77/fastlz.c" \
+    "$REPO_ROOT/baselines/elf/utils.cc" \
     "$REPO_ROOT/utils/output_bit_stream.cc" "$REPO_ROOT/utils/input_bit_stream.cc" \
     "$REPO_ROOT/utils/elias_gamma_codec.cc" "$REPO_ROOT/utils/elias_delta_codec.cc" \
     "$REPO_ROOT/utils/serf_utils_64.cc" "$REPO_ROOT/utils/post_office_solver.cc" \

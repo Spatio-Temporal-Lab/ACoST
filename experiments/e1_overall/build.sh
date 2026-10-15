@@ -20,7 +20,6 @@ g++ -O3 -std=c++17 \
     "$REPO_ROOT/baselines/elf/ElfCompressor.cpp" \
     "$REPO_ROOT/baselines/elf/ElfDecompressor.cpp" \
     "$REPO_ROOT/baselines/elf/utils.cc" \
-    "$REPO_ROOT/baselines/lz77/fastlz.c" \
     "$REPO_ROOT/utils/output_bit_stream.cc" \
     "$REPO_ROOT/utils/input_bit_stream.cc" \
     "$REPO_ROOT/utils/elias_gamma_codec.cc" \

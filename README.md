@@ -24,10 +24,9 @@ The evaluation includes six real-world trajectory datasets, algorithm and compon
 ```text
 ACoST/
 ├── algorithm/                 # CoST and ACoST implementations
-├── baselines/                  # Serf, Elf, Gorilla, FastLZ, and trajectory baselines
+├── baselines/                  # Serf, Elf, Gorilla, and trajectory baselines
 │   ├── elf/
 │   ├── gorilla/
-│   ├── lz77/
 │   ├── serf/
 │   └── trajcompress/
 ├── data/                       # Local dataset location; data are not tracked by Git
@@ -94,7 +93,7 @@ E2 supports `family`, `predictor`, and `common-ton` modes. Its argument format i
 make -C embedded
 ```
 
-The E6 measurements are listed in `results/result.xlsx`. Building does not flash a board; flashing and hardware tests require the target STM32 and the appropriate programmer setup.
+E6 uses two STM32 boards. One board compresses the trajectory and transmits it over UART; the other receives and processes the stream. Connect UART TX-to-RX and RX-to-TX with a shared GND, then connect the transmitting board to the host through USB-TTL. Select the dataset, algorithm, and baud rate, run the trajectory, and record compression ratio, compression/decompression time, and end-to-end latency. Repeat for each tested baud rate. The E6 measurements are listed in [`results/result.xlsx`](results/result.xlsx).
 
 ## Datasets
 
@@ -120,9 +119,9 @@ For TrajAir, only longitude and latitude are used. WorldTrace refers to the proc
 | E3 | Error-bound sensitivity | ACoST, CoST, Serf-Qt, and Serf-XOR over five error bounds on all six datasets. |
 | E4 | Sampling-interval sensitivity | The four E3 methods on Berlin at the original interval and 5, 10, 20, 40, and 80 s. |
 | E5 | Parameter sensitivity | ACoST onset-threshold and damping-constant settings on the 20 s and 40 s Berlin samples. |
-| E6 | Embedded-system validation | STM32 compression/decompression performance and measured UART bandwidth/end-to-end latency. |
+| E6 | Embedded-system validation | ACoST, CoST, Serf-Qt, Elf, VOLTCom, and OPW-TR on STM32; compression ratio, on-board compression/decompression time, and UART end-to-end latency at multiple baud rates. |
 
-The E1–E6 result tables are in [`results/result.xlsx`](results/result.xlsx). PC and embedded measurements are reported separately.
+The E1–E6 result tables are in [`results/result.xlsx`](results/result.xlsx); PC and embedded measurements are reported separately.
 
 ## Citation
 
