@@ -1,8 +1,8 @@
-# ACoST: Efficient Error-Bounded Compression for Streaming Trajectories
+# ACoST: Adaptive Error-Bounded Compression for Streaming Trajectories
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-This repository contains the algorithm implementations and experiment sources for **Efficient Error-Bounded Compression for Streaming Trajectories** (anonymous VLDB Journal submission).
+This repository contains the algorithm implementations and experiment sources for **Adaptive Error-Bounded Compression for Streaming Trajectories**.
 
 ## Overview
 
@@ -14,7 +14,7 @@ The evaluation includes six real-world trajectory datasets, algorithm and compon
 
 | Metric | ACoST | CoST | Serf-Qt | Elf | VOLTCom | OPW-TR |
 |---|---:|---:|---:|---:|---:|---:|
-| CR (ε=10⁻⁵) | 6.84% | 7.24% | 8.72% | 35.64% | 50.18% | 54.20% |
+| CR (ε=10⁻⁵) | 18.45 | 16.52 | 12.84 | 3.32 | 2.40 | 2.65 |
 | CT (PC, μs/pt) | 0.100 | 0.120 | 0.037 | 0.078 | 0.002 | 0.137 |
 | CT (STM32, μs/pt) | 256 | 139 | 46 | 72 | 41 | 182 |
 | E2E @300 baud (ms) | 60.42 | 61.49 | 249.42 | 520.88 | 17089.80 | 11734.93 |
@@ -74,7 +74,7 @@ From the repository root, build and run the overall benchmark:
 DATA_ROOT=/path/to/data bash experiments/e1_overall/run.sh
 ```
 
-The benchmark compares 12 algorithms across six datasets. It builds outside the repository and writes CSV output to the sibling `results/` directory by default. Set `OUTPUT=/path/to/file.csv` to change the output path; use `--help` for benchmark options.
+The benchmark compares 11 methods, including Raw, across six datasets. It builds outside the repository and writes CSV output to the sibling `results/` directory by default. Set `OUTPUT=/path/to/file.csv` to change the output path; use `--help` for benchmark options.
 
 ### Run E2–E5
 
@@ -109,14 +109,14 @@ Download the six evaluation datasets and Berlin interval-sampled data from [Baid
 | TrajAir | Aircraft | 1 s | 4,000 | 1,614,108 |
 | Berlin (SimRa) | Bicycle | 1 s | 4,438 | 2,231,686 |
 
-WorldTrace refers to the processed one-second release. The dataset archive also includes Berlin datasets sampled at intervals from 5 s to 80 s. The counts above are per-dataset paper statistics; no combined point total is reported.
+For TrajAir, only longitude and latitude are used. WorldTrace refers to the processed one-second release. The dataset archive also includes Berlin datasets sampled at intervals from 5 s to 80 s. The counts above are per-dataset paper statistics; no combined point total is reported.
 
 ## Experiments
 
 | ID | Experiment | Scope reported in the result tables |
 |---|---|---|
-| E1 | Overall performance | 12 algorithms × 6 datasets; compression ratio and PC compression/decompression time. |
-| E2 | Ablation and implementation comparison | ACoST component ablations on sampled Berlin; vectorized versus non-vectorized prediction; CoST with the CTRA Family predictor. |
+| E1 | Overall performance | 11 methods, including Raw, across 6 datasets; compression ratio and PC compression/decompression time. |
+| E2 | Ablation and implementation comparison | ACoST component ablations on sampled Berlin; vector versus arc-integral extrapolation; CoST-CTRA predictor comparison. |
 | E3 | Error-bound sensitivity | ACoST, CoST, Serf-Qt, and Serf-XOR over five error bounds on all six datasets. |
 | E4 | Sampling-interval sensitivity | The four E3 methods on Berlin at the original interval and 5, 10, 20, 40, and 80 s. |
 | E5 | Parameter sensitivity | ACoST onset-threshold and damping-constant settings on the 20 s and 40 s Berlin samples. |
@@ -127,11 +127,10 @@ The E1–E6 result tables are in [`results/result.xlsx`](results/result.xlsx). P
 ## Citation
 
 ```bibtex
-@article{efficientStreamingTrajectories2026,
-  title   = {Efficient Error-Bounded Compression for Streaming Trajectories},
-  author  = {{Anonymous}},
-  journal = {The VLDB Journal},
-  note    = {Under review}
+@article{zhouAdaptiveErrorBoundedCompression2026,
+  title   = {Adaptive Error-Bounded Compression for Streaming Trajectories},
+  author  = {Zhou, Qinqin and Chen, Meibin and Xu, Zihang and Li, Zheng and Li, Ruiyuan and He, Huajun and Zheng, Yu},
+  journal = {The VLDB Journal}
 }
 ```
 
